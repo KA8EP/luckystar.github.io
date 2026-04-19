@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Генератор паролей с инфо-панелью</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f2f5;
+            padding: 20px;
+        }
+
+        /* Главный контейнер для выравнивания в ряд */
+        .main-wrapper {
+            display: flex;
+            gap: 20px; /* Расстояние между генератором и табличками */
+            max-width: 800px;
+            width: 100%;
+            align-items: flex-start;
+        }
+
+        /* Стили генератора */
+        .generator-container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            flex: 1; /* Занимает доступное место */
+        }
+
+        /* Стили боковой панели с табличками */
+        .info-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 300px; /* Фиксированная ширина для инфо-блоков */
+        }
+
+        .info-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .info-card h3 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 2px solid #28a745;
+            padding-bottom: 5px;
+        }
+
+        .info-card p {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        /* Остальные стили элементов управления */
+        #result {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #e9ecef;
+            border-radius: 6px;
+            word-break: break-all;
+            min-height: 24px;
+        }
+
+        .options {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        .options label {
+            display: block;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-wrapper">
+        
+        <!-- Левая часть: Генератор -->
+        <div class="generator-container">
+            <div id="result">Настройте и нажмите кнопку</div>
+
+            <div class="options">
+                <label><input type="checkbox" id="uppercase" checked> Прописные (A-Z)</label>
+                <label><input type="checkbox" id="lowercase" checked> Строчные (a-z)</label>
+                <label><input type="checkbox" id="numbers" checked> Цифры (0-9)</label>
+                <label><input type="checkbox" id="symbols"> Спецсимволы (!@#$)</label>
+            </div>
+            
+            <button onclick="generatePassword()">Сгенерировать пароль</button>
+        </div>
+
+        <!-- Правая часть: Таблички с информацией -->
+        <div class="info-sidebar">
+            <div class="info-card">
+                <h3>О сайте</h3>
+                <p>Генератор создан в качестве проекта "Deadlock" по информатике для ИЭК.</p>
+            </div>
+
+            <div class="info-card">
+                <h3>О создателях</h3>
+                <p>Создатели красавчики.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function generatePassword() {
+            const length = 12;
+            const charsets = {
+                uppercase: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+                lowercase: "abcdefghijklmnopqrstuvwxyz",
+                numbers: "0123456789",
+                symbols: "!@#$%^&*()_+~`|}{[]:;?><,./-="
+            };
+
+            let availableChars = "";
+            if (document.getElementById("uppercase").checked) availableChars += charsets.uppercase;
+            if (document.getElementById("lowercase").checked) availableChars += charsets.lowercase;
+            if (document.getElementById("numbers").checked) availableChars += charsets.numbers;
+            if (document.getElementById("symbols").checked) availableChars += charsets.symbols;
+
+            if (availableChars === "") {
+                document.getElementById("result").innerText = "Выберите параметры!";
+                return;
+            }
+
+            let password = "";
+            for (let i = 0; i < length; i++) {
+                const randomIndex = Math.floor(Math.random() * availableChars.length);
+                password += availableChars[randomIndex];
+            }
+            
+            document.getElementById("result").innerText = password;
+        }
+    </script>
+
+</body>
+</html>
