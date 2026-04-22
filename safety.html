@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Генератор безопасных имен</title>
+    <style>
+        /* Используем те же стили для единообразия */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f2f5;
+            padding: 20px;
+            position: relative;
+        }
+
+        .top-nav {
+            position: absolute;
+            top: 20px;
+            left: 20px; /* Ссылка "Назад" обычно слева */
+        }
+
+        .nav-link {
+            display: inline-block;
+            padding: 12px 20px;
+            background-color: white;
+            color: #007bff; /* Другой цвет для отличия страниц */
+            text-decoration: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            font-weight: bold;
+            transition: all 0.2s ease;
+        }
+
+        .nav-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+
+        .main-wrapper {
+            display: flex;
+            gap: 20px;
+            max-width: 800px;
+            width: 100%;
+            align-items: flex-start;
+        }
+
+        .generator-container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            flex: 1;
+        }
+
+        .info-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 300px;
+        }
+
+        .info-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .info-card h3 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 5px;
+        }
+
+        #result {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #e9f2ff;
+            border-radius: 6px;
+            color: #0056b3;
+            min-height: 30px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        @media (max-width: 768px) {
+            .main-wrapper { flex-direction: column; }
+            .info-sidebar { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="top-nav">
+        <a href="index.html" class="nav-link">← К генератору паролей</a>
+    </nav>
+
+    <div class="main-wrapper">
+        
+        <div class="generator-container">
+            <h2>Генератор имен</h2>
+            <div id="result">Нажмите для генерации</div>
+            <button onclick="generateSecureName()">Создать имя пользователя</button>
+        </div>
+
+        <div class="info-sidebar">
+            <div class="info-card">
+                <h3>Зачем это нужно?</h3>
+                <p>Безопасное имя (никнейм) не содержит вашей фамилии или даты рождения, что защищает вашу приватность.</p>
+            </div>
+            <div class="info-card">
+                <h3>Совет</h3>
+                <p>Используйте разные имена для разных сервисов, чтобы ваши аккаунты было сложнее связать друг с другом.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function generateSecureName() {
+            const adjectives = ["Super", "Silent", "Brave", "Cyber", "Dark", "Neon", "Swift", "Golden", "Iron", "Mega"];
+            const nouns = ["Ghost", "Wolf", "Knight", "Runner", "Eagle", "Tiger", "Coder", "Admin", "Hawk", "Pilot"];
+            
+            // Берем случайное прилагательное, существительное и число
+            const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
+            const noun = nouns[Math.floor(Math.random() * nouns.length)];
+            const num = Math.floor(Math.random() * 999);
+            
+            const secureName = adj + noun + num;
+            document.getElementById("result").innerText = secureName;
+        }
+    </script>
+
+</body>
+</html>
