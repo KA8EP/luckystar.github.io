@@ -2,6 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Генератор паролей с инфо-панелью</title>
     <style>
         body {
@@ -13,12 +14,39 @@
             margin: 0;
             background-color: #f0f2f5;
             padding: 20px;
+            position: relative; /* Нужно для позиционирования навигации */
+        }
+
+        /* Стиль для кнопки-ссылки на вторую страницу */
+        .top-nav {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        .nav-link {
+            display: inline-block;
+            padding: 12px 20px;
+            background-color: white;
+            color: #28a745;
+            text-decoration: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            font-weight: bold;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+
+        .nav-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            border-color: #28a745;
         }
 
         /* Главный контейнер для выравнивания в ряд */
         .main-wrapper {
             display: flex;
-            gap: 20px; /* Расстояние между генератором и табличками */
+            gap: 20px;
             max-width: 800px;
             width: 100%;
             align-items: flex-start;
@@ -31,15 +59,15 @@
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             text-align: center;
-            flex: 1; /* Занимает доступное место */
+            flex: 1;
         }
 
-        /* Стили боковой панели с табличками */
+        /* Стили боковой панели */
         .info-sidebar {
             display: flex;
             flex-direction: column;
             gap: 20px;
-            width: 300px; /* Фиксированная ширина для инфо-блоков */
+            width: 300px;
         }
 
         .info-card {
@@ -62,7 +90,6 @@
             line-height: 1.5;
         }
 
-        /* Остальные стили элементов управления */
         #result {
             font-size: 20px;
             font-weight: bold;
@@ -100,9 +127,30 @@
         button:hover {
             background-color: #218838;
         }
+
+        /* Адаптивность для мобилок */
+        @media (max-width: 768px) {
+            .main-wrapper {
+                flex-direction: column;
+                align-items: center;
+            }
+            .info-sidebar {
+                width: 100%;
+            }
+            .top-nav {
+                position: static;
+                margin-bottom: 20px;
+                text-align: center;
+            }
+        }
     </style>
 </head>
 <body>
+
+    <!-- Навигация -->
+    <nav class="top-nav">
+        <a href="safety.html" class="nav-link">Генератор имён →</a>
+    </nav>
 
     <div class="main-wrapper">
         
@@ -137,7 +185,7 @@
 
     <script>
         function generatePassword() {
-            const length = 12;
+            const length = 14; 
             const charsets = {
                 uppercase: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
                 lowercase: "abcdefghijklmnopqrstuvwxyz",
@@ -156,10 +204,13 @@
                 return;
             }
 
+            // Используем window.crypto для большей безопасности
             let password = "";
+            const array = new Uint32Array(length);
+            window.crypto.getRandomValues(array);
+
             for (let i = 0; i < length; i++) {
-                const randomIndex = Math.floor(Math.random() * availableChars.length);
-                password += availableChars[randomIndex];
+                password += availableChars[array[i] % availableChars.length];
             }
             
             document.getElementById("result").innerText = password;
