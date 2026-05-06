@@ -3,108 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Генератор имен</title>
+    <title>Генератор Имен Pro</title>
     <style>
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --accent: #4ade80; /* Зеленый акцент, как в генераторах */
+            --text: #ffffff;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             height: 100vh;
             margin: 0;
-            background-color: #f4f7f6;
         }
-        .container {
-            background: white;
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+
+        .card {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            width: 350px;
             text-align: center;
-            max-width: 400px;
-            width: 90%;
+            border: 1px solid #333;
         }
-        h1 { color: #333; font-size: 1.5rem; }
-        #result {
-            font-size: 2rem;
-            font-weight: bold;
-            margin: 1.5rem 0;
-            color: #4a90e2;
-            min-height: 3rem;
-        }
-        button {
-            background-color: #4a90e2;
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            font-size: 1rem;
+
+        h1 { font-size: 1.2rem; color: #888; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
+
+        #result-box {
+            background: #252525;
+            padding: 15px;
             border-radius: 8px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #444;
+            color: var(--accent);
+        }
+
+        .controls { display: flex; flex-direction: column; gap: 10px; }
+
+        button {
+            background-color: var(--accent);
+            color: #000;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            font-weight: bold;
             cursor: pointer;
-            transition: background 0.3s;
+            font-size: 1rem;
+            transition: transform 0.1s, opacity 0.2s;
         }
-        button:hover { background-color: #357abd; }
-        button:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
+
+        button:hover { opacity: 0.9; }
+        button:active { transform: scale(0.98); }
+        button:disabled { background: #444; color: #888; cursor: not-allowed; }
+
+        .nav-link {
+            margin-top: 20px;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
         }
-        .status { font-size: 0.8rem; color: #888; margin-top: 10px; }
+        .nav-link:hover { color: var(--accent); }
+
+        .error-msg { color: #ff5555; font-size: 0.8rem; margin-top: 10px; display: none; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>Генератор имен</h1>
-        <div id="result">Загрузка...</div>
-        <button id="genBtn" disabled>Подождите...</button>
-        <div id="status" class="status">Подключаемся к базе данных...</div>
+    <div class="card">
+        <h1>Генератор Имен</h1>
+        
+        <div id="result-box">Загрузка...</div>
+
+        <div class="controls">
+            <button id="genBtn" disabled>Загрузка базы...</button>
+            <!-- Кнопка перехода на другую страницу -->
+            <a href="page2.html" class="nav-link">Перейти на другую страницу →</a>
+        </div>
+
+        <div id="error" class="error-msg">Ошибка доступа к файлу. Проверьте ссылку.</div>
     </div>
 
     <script>
-        // Преобразованная прямая ссылка на ваш файл
-        const FILE_URL = 'https://google.com';
+        // Исправленная ссылка для прямого скачивания
+        const FILE_ID = '1iifY9xQvHpvthWBtHYWu_28o7WgR6kQd';
+        const FILE_URL = `https://google.com{FILE_ID}`;
 
         let words = [];
 
-        async function loadFile() {
-            const resultDiv = document.getElementById('result');
+        async function init() {
             const btn = document.getElementById('genBtn');
-            const statusDiv = document.getElementById('status');
-
+            const res = document.getElementById('result-box');
+            
             try {
+                // Пытаемся получить данные
                 const response = await fetch(FILE_URL);
-                if (!response.ok) throw new Error('Доступ запрещен или файл не найден');
+                if (!response.ok) throw new Error('CORS or Access error');
                 
                 const text = await response.text();
-                
-                // Разбиваем текст на строки и убираем пустые
-                words = text.split(/\r?\n/).map(w => w.trim()).filter(w => w.length > 0);
+                words = text.split(/\r?\n/).map(s => s.trim()).filter(s => s.length > 0);
 
-                if (words.length > 0) {
-                    resultDiv.innerText = 'Готово!';
-                    btn.innerText = 'Сгенерировать';
-                    btn.disabled = false;
-                    statusDiv.innerText = `В базе ${words.length} слов`;
-                } else {
-                    throw new Error('Файл пуст');
-                }
-            } catch (error) {
-                console.error(error);
-                resultDiv.innerText = 'Ошибка';
-                resultDiv.style.color = 'red';
-                statusDiv.innerText = 'Проверьте доступ по ссылке в Google Drive';
+                res.innerText = 'Готово к работе';
+                btn.innerText = 'СГЕНЕРИРОВАТЬ';
+                btn.disabled = false;
+            } catch (e) {
+                console.error(e);
+                res.innerText = 'Ошибка';
+                document.getElementById('error').style.display = 'block';
+                // Если Google блокирует fetch, попробуйте открыть страницу через расширение "Allow CORS" в браузере
             }
         }
 
         function generate() {
-            const randomIndex = Math.floor(Math.random() * words.length);
-            const randomWord = words[randomIndex];
-            document.getElementById('result').innerText = randomWord;
+            const word = words[Math.floor(Math.random() * words.length)];
+            document.getElementById('result-box').innerText = word;
         }
 
         document.getElementById('genBtn').addEventListener('click', generate);
-
-        // Запуск загрузки
-        loadFile();
+        init();
     </script>
+
 </body>
 </html>
