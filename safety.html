@@ -4,8 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Генератор безопасных имен</title>
+    
+    <!-- ПОДКЛЮЧЕНИЕ БИБЛИОТЕКИ (РАБОЧАЯ ССЫЛКА) -->
+    <script src="https://jsdelivr.net"></script>
+
     <style>
-        /* Используем те же стили для единообразия */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
@@ -21,14 +24,14 @@
         .top-nav {
             position: absolute;
             top: 20px;
-            left: 20px; /* Ссылка "Назад" обычно слева */
+            left: 20px;
         }
 
         .nav-link {
             display: inline-block;
             padding: 12px 20px;
             background-color: white;
-            color: #007bff; /* Другой цвет для отличия страниц */
+            color: #007bff;
             text-decoration: none;
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
@@ -88,6 +91,7 @@
             border-radius: 6px;
             color: #0056b3;
             min-height: 30px;
+            word-break: break-all;
         }
 
         button {
@@ -100,6 +104,7 @@
             border: none;
             border-radius: 6px;
             transition: background 0.2s;
+            font-weight: bold;
         }
 
         button:hover {
@@ -111,7 +116,6 @@
             .info-sidebar { width: 100%; }
         }
     </style>
-    <script src="https://cloudflare.com"></script>
 </head>
 <body>
 
@@ -140,16 +144,21 @@
 
     </div>
 
-<script>
-    function generateSecureName() {
-        // Вызываем библиотеку Faker
-        // internet.userName() создает никнеймы типа "Ivan_64" или "Petrov.Alice"
-        const userName = faker.internet.userName(); 
-        
-        // Выводим результат в блок с id="result"
-        document.getElementById("result").innerText = userName;
-    }
-</script>
+    <script>
+        function generateSecureName() {
+            try {
+                // В новых версиях библиотеки объект называется 'faker' (с маленькой буквы)
+                // Генерируем случайный никнейм (UserName)
+                const userName = faker.internet.userName(); 
+                
+                // Выводим результат
+                document.getElementById("result").innerText = userName;
+            } catch (error) {
+                console.error("Ошибка библиотеки:", error);
+                document.getElementById("result").innerText = "Ошибка загрузки :(";
+            }
+        }
+    </script>
 
 </body>
 </html>
