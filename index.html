@@ -31,22 +31,40 @@
             max-width: 400px;
             text-align: center;
         }
-        nav { margin-bottom: 20px; }
+        nav { margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 15px; }
         nav a { color: var(--accent); text-decoration: none; margin: 0 10px; font-weight: bold; }
+        nav span { color: var(--text-dim); margin: 0 10px; }
+
+        .result-container { position: relative; margin-bottom: 20px; }
         .result-box {
             background: #2a2a2a;
-            padding: 15px;
+            padding: 15px 50px 15px 15px; /* Место под кнопку копирования */
             border-radius: 8px;
             font-size: 1.2rem;
-            margin-bottom: 20px;
             word-break: break-all;
             min-height: 28px;
             border: 1px solid #333;
+            text-align: left;
         }
+        .copy-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+            border: none;
+            color: var(--accent);
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
         .settings { text-align: left; margin-bottom: 20px; }
         .setting-item { margin: 10px 0; display: flex; justify-content: space-between; }
         input[type="number"] { width: 50px; background: #333; border: none; color: white; padding: 5px; border-radius: 4px; }
-        button {
+        
+        .main-btn {
             width: 100%;
             padding: 12px;
             background: var(--accent);
@@ -57,7 +75,7 @@
             cursor: pointer;
             transition: 0.3s;
         }
-        button:hover { opacity: 0.8; }
+        .main-btn:hover { opacity: 0.8; }
     </style>
 </head>
 <body>
@@ -66,7 +84,11 @@
             <span>Пароли</span> | <a href="safety.html">Имена</a>
         </nav>
         <h2>Генератор паролей</h2>
-        <div class="result-box" id="passwordResult">Нажмите «Создать»</div>
+        
+        <div class="result-container">
+            <div class="result-box" id="passwordResult">Нажмите «Создать»</div>
+            <button class="copy-btn" onclick="copyText('passwordResult')">COPY</button>
+        </div>
         
         <div class="settings">
             <div class="setting-item">
@@ -86,7 +108,7 @@
                 <input type="checkbox" id="symbols">
             </div>
         </div>
-        <button onclick="generatePassword()">Создать пароль</button>
+        <button class="main-btn" onclick="generatePassword()">Создать пароль</button>
     </div>
 
     <script>
@@ -111,6 +133,17 @@
                 password += charSet.charAt(Math.floor(Math.random() * charSet.length));
             }
             document.getElementById('passwordResult').innerText = password;
+        }
+
+        async function copyText(elementId) {
+            const text = document.getElementById(elementId).innerText;
+            if (text === "Нажмите «Создать»" || text === "Загрузка...") return;
+            try {
+                await navigator.clipboard.writeText(text);
+                alert("Скопировано!");
+            } catch (err) {
+                console.error("Ошибка копирования: ", err);
+            }
         }
     </script>
 </body>
