@@ -111,6 +111,7 @@
             .info-sidebar { width: 100%; }
         }
     </style>
+    <script src="https://cloudflare.com"></script>
 </head>
 <body>
 
@@ -139,20 +140,16 @@
 
     </div>
 
-    <script>
-        function generateSecureName() {
-            const adjectives = ["Super", "Silent", "Brave", "Cyber", "Dark", "Neon", "Swift", "Golden", "Iron", "Mega"];
-            const nouns = ["Ghost", "Wolf", "Knight", "Runner", "Eagle", "Tiger", "Coder", "Admin", "Hawk", "Pilot"];
-            
-            // Берем случайное прилагательное, существительное и число
-            const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
-            const noun = nouns[Math.floor(Math.random() * nouns.length)];
-            const num = Math.floor(Math.random() * 999);
-            
-            const secureName = adj + noun + num;
-            document.getElementById("result").innerText = secureName;
-        }
-    </script>
+<script>
+    function generateSecureName() {
+        // Вызываем библиотеку Faker
+        // internet.userName() создает никнеймы типа "Ivan_64" или "Petrov.Alice"
+        const userName = faker.internet.userName(); 
+        
+        // Выводим результат в блок с id="result"
+        document.getElementById("result").innerText = userName;
+    }
+</script>
 
 </body>
 </html>
