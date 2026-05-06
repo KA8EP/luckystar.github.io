@@ -3,101 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Генератор имен (PRO)</title>
+    <title>Генератор имен</title>
     <style>
-        :root { --bg: #121212; --card-bg: #1e1e1e; --accent: #ff4757; --text: #ffffff; }
-        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); color: var(--text); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .container { background: var(--card-bg); padding: 2rem; border-radius: 15px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        nav { margin-bottom: 20px; }
-        nav a { color: var(--accent); text-decoration: none; margin: 0 10px; font-weight: bold; }
-        .result-box { background: #2a2a2a; padding: 15px; border-radius: 8px; font-size: 1.4rem; margin-bottom: 20px; border: 1px solid #333; min-height: 32px; color: var(--accent); cursor: pointer; }
-        .settings { text-align: left; margin-bottom: 20px; }
-        .setting-item { margin: 10px 0; display: flex; justify-content: space-between; }
-        button { width: 100%; padding: 12px; background: var(--accent); border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        button:disabled { background: #444; cursor: not-allowed; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f7f6;
+        }
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+        h1 { color: #333; font-size: 1.5rem; }
+        #result {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 1.5rem 0;
+            color: #4a90e2;
+            min-height: 3rem;
+        }
+        button {
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover { background-color: #357abd; }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
         .status { font-size: 0.8rem; color: #888; margin-top: 10px; }
     </style>
 </head>
 <body>
+
     <div class="container">
-        <nav>
-            <a href="index.html">Пароли</a> | <span>Имена</span>
-        </nav>
-        <h2>Генератор имен</h2>
-        <div class="result-box" id="nameResult" onclick="copyToClipboard()">Загрузка базы...</div>
-        
-        <div class="settings">
-            <div class="setting-item">
-                <span>Добавить числа:</span>
-                <input type="checkbox" id="addNumbers">
-            </div>
-            <div class="setting-item">
-                <span>Добавить спецсимвол:</span>
-                <input type="checkbox" id="addSymbols">
-            </div>
-        </div>
-        <button id="genBtn" onclick="generateName()" disabled>Загрузка слов...</button>
-        <div id="status" class="status">Проверка файла names.txt...</div>
+        <h1>Генератор имен</h1>
+        <div id="result">Загрузка...</div>
+        <button id="genBtn" disabled>Подождите...</button>
+        <div id="status" class="status">Подключаемся к базе данных...</div>
     </div>
 
     <script>
-        let wordBank = [];
+        // Преобразованная прямая ссылка на ваш файл
+        const FILE_URL = 'https://google.com';
 
-        // Функция загрузки слов из внешнего файла
-        async function loadWords() {
+        let words = [];
+
+        async function loadFile() {
+            const resultDiv = document.getElementById('result');
+            const btn = document.getElementById('genBtn');
+            const statusDiv = document.getElementById('status');
+
             try {
-                const response = await fetch('names.txt'); // Путь к вашему файлу
-                if (!response.ok) throw new Error('Файл не найден');
+                const response = await fetch(FILE_URL);
+                if (!response.ok) throw new Error('Доступ запрещен или файл не найден');
                 
                 const text = await response.text();
-                // Разделяем текст на массив по строкам, убираем пустые строки и пробелы
-                wordBank = text.split('\n').map(word => word.trim()).filter(word => word.length > 0);
                 
-                if (wordBank.length > 0) {
-                    document.getElementById('status').innerText = `База готова: ${wordBank.length} слов`;
-                    document.getElementById('genBtn').disabled = false;
-                    document.getElementById('nameResult').innerText = "Готов к работе";
+                // Разбиваем текст на строки и убираем пустые
+                words = text.split(/\r?\n/).map(w => w.trim()).filter(w => w.length > 0);
+
+                if (words.length > 0) {
+                    resultDiv.innerText = 'Готово!';
+                    btn.innerText = 'Сгенерировать';
+                    btn.disabled = false;
+                    statusDiv.innerText = `В базе ${words.length} слов`;
                 } else {
                     throw new Error('Файл пуст');
                 }
             } catch (error) {
-                document.getElementById('status').innerText = "Ошибка: " + error.message;
-                document.getElementById('nameResult').innerText = "Ошибка загрузки";
+                console.error(error);
+                resultDiv.innerText = 'Ошибка';
+                resultDiv.style.color = 'red';
+                statusDiv.innerText = 'Проверьте доступ по ссылке в Google Drive';
             }
         }
 
-        function generateName() {
-            if (wordBank.length === 0) return;
-
-            // Выбираем два случайных слова из базы для интересного ника
-            let word1 = wordBank[Math.floor(Math.random() * wordBank.length)];
-            let word2 = wordBank[Math.floor(Math.random() * wordBank.length)];
-            
-            let name = word1 + word2;
-            
-            if (document.getElementById('addSymbols').checked) {
-                const syms = ["_", "-", ".", "!", "$"];
-                name += syms[Math.floor(Math.random() * syms.length)];
-            }
-            
-            if (document.getElementById('addNumbers').checked) {
-                name += Math.floor(Math.random() * 999);
-            }
-            
-            document.getElementById('nameResult').innerText = name;
+        function generate() {
+            const randomIndex = Math.floor(Math.random() * words.length);
+            const randomWord = words[randomIndex];
+            document.getElementById('result').innerText = randomWord;
         }
 
-        // Бонус: Копирование по клику на результат
-        function copyToClipboard() {
-            const text = document.getElementById('nameResult').innerText;
-            if (text && text !== "Готов к работе" && text !== "Ошибка загрузки") {
-                navigator.clipboard.writeText(text);
-                alert("Скопировано: " + text);
-            }
-        }
+        document.getElementById('genBtn').addEventListener('click', generate);
 
-        // Запускаем загрузку при старте
-        loadWords();
+        // Запуск загрузки
+        loadFile();
     </script>
 </body>
 </html>
