@@ -3,138 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Генератор Имен Pro</title>
+    <title>Генератор имен</title>
     <style>
         :root {
-            --bg-color: #121212;
+            --bg: #121212;
             --card-bg: #1e1e1e;
-            --accent: #4ade80; /* Зеленый акцент, как в генераторах */
+            --accent: #00cfb4; /* Тот же бирюзовый цвет */
             --text: #ffffff;
+            --text-dim: #b0b0b0;
         }
-
         body {
-            font-family: 'Inter', -apple-system, sans-serif;
-            background-color: var(--bg-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
             color: var(--text);
             display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
-            height: 100vh;
+            align-items: center;
+            min-height: 100vh;
             margin: 0;
         }
-
-        .card {
+        .container {
             background: var(--card-bg);
-            padding: 30px;
-            border-radius: 16px;
+            padding: 2rem;
+            border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            width: 350px;
+            width: 100%;
+            max-width: 400px;
             text-align: center;
-            border: 1px solid #333;
         }
-
-        h1 { font-size: 1.2rem; color: #888; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
-
-        #result-box {
-            background: #252525;
+        nav { margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 15px; }
+        nav a { color: var(--accent); text-decoration: none; margin: 0 10px; font-weight: bold; }
+        nav span { color: var(--text-dim); margin: 0 10px; }
+        
+        .result-box {
+            background: #2a2a2a;
             padding: 15px;
             border-radius: 8px;
             font-size: 1.5rem;
-            font-weight: bold;
             margin-bottom: 20px;
-            min-height: 40px;
+            word-break: break-word;
+            min-height: 36px;
+            border: 1px solid #333;
+            color: var(--accent);
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 1px solid #444;
-            color: var(--accent);
         }
-
-        .controls { display: flex; flex-direction: column; gap: 10px; }
+        
+        .info {
+            text-align: left;
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            margin-bottom: 20px;
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 6px;
+        }
 
         button {
-            background-color: var(--accent);
-            color: #000;
+            width: 100%;
+            padding: 15px;
+            background: var(--accent);
             border: none;
-            padding: 12px;
-            border-radius: 6px;
+            border-radius: 8px;
+            color: var(--bg);
             font-weight: bold;
             cursor: pointer;
+            transition: 0.3s;
             font-size: 1rem;
-            transition: transform 0.1s, opacity 0.2s;
         }
-
-        button:hover { opacity: 0.9; }
-        button:active { transform: scale(0.98); }
+        button:hover { opacity: 0.8; transform: translateY(-1px); }
         button:disabled { background: #444; color: #888; cursor: not-allowed; }
-
-        .nav-link {
-            margin-top: 20px;
-            color: #666;
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: color 0.2s;
+        
+        .status-dot {
+            height: 8px;
+            width: 8px;
+            background-color: #ff4b2b;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
         }
-        .nav-link:hover { color: var(--accent); }
-
-        .error-msg { color: #ff5555; font-size: 0.8rem; margin-top: 10px; display: none; }
+        .online { background-color: var(--accent); }
     </style>
 </head>
 <body>
-
-    <div class="card">
-        <h1>Генератор Имен</h1>
+    <div class="container">
+        <nav>
+            <!-- Ссылки для перехода между страницами -->
+            <a href="index.html">Пароли</a> | <span>Имена</span>
+        </nav>
         
-        <div id="result-box">Загрузка...</div>
-
-        <div class="controls">
-            <button id="genBtn" disabled>Загрузка базы...</button>
-            <!-- Кнопка перехода на другую страницу -->
-            <a href="page2.html" class="nav-link">Перейти на другую страницу →</a>
+        <h2>Генератор имён</h2>
+        
+        <div class="result-box" id="nameResult">Загрузка базы...</div>
+        
+        <div class="info">
+            <span id="statusDot" class="status-dot"></span>
+            <span id="statusText">Подключение к облаку...</span>
         </div>
 
-        <div id="error" class="error-msg">Ошибка доступа к файлу. Проверьте ссылку.</div>
+        <button id="genBtn" onclick="generateName()" disabled>Создать имя</button>
     </div>
 
     <script>
-        // Исправленная ссылка для прямого скачивания
+        // Твоя ссылка на файл
         const FILE_ID = '1iifY9xQvHpvthWBtHYWu_28o7WgR6kQd';
         const FILE_URL = `https://google.com{FILE_ID}`;
-
-        let words = [];
+        
+        let nameDatabase = [];
 
         async function init() {
+            const resultBox = document.getElementById('nameResult');
+            const statusText = document.getElementById('statusText');
+            const statusDot = document.getElementById('statusDot');
             const btn = document.getElementById('genBtn');
-            const res = document.getElementById('result-box');
-            
-            try {
-                // Пытаемся получить данные
-                const response = await fetch(FILE_URL);
-                if (!response.ok) throw new Error('CORS or Access error');
-                
-                const text = await response.text();
-                words = text.split(/\r?\n/).map(s => s.trim()).filter(s => s.length > 0);
 
-                res.innerText = 'Готово к работе';
-                btn.innerText = 'СГЕНЕРИРОВАТЬ';
-                btn.disabled = false;
-            } catch (e) {
-                console.error(e);
-                res.innerText = 'Ошибка';
-                document.getElementById('error').style.display = 'block';
-                // Если Google блокирует fetch, попробуйте открыть страницу через расширение "Allow CORS" в браузере
+            try {
+                // Попытка загрузить файл
+                const response = await fetch(FILE_URL);
+                if (!response.ok) throw new Error("CORS/Access Error");
+                
+                const data = await response.text();
+                nameDatabase = data.split(/\r?\n/).map(n => n.trim()).filter(n => n.length > 0);
+                
+                finishLoading(`База загружена: ${nameDatabase.length} имён`);
+            } catch (error) {
+                console.log("Облако недоступно, используем локальный список");
+                // Запасной список на случай ошибки Google Drive
+                nameDatabase = ["Александр", "Дмитрий", "Максим", "Артем", "Иван", "Кирилл", "Михаил"];
+                finishLoading("Локальный режим (ошибка облака)");
             }
         }
 
-        function generate() {
-            const word = words[Math.floor(Math.random() * words.length)];
-            document.getElementById('result-box').innerText = word;
+        function finishLoading(message) {
+            document.getElementById('statusText').innerText = message;
+            document.getElementById('statusDot').classList.add('online');
+            document.getElementById('nameResult').innerText = "Готов к работе";
+            document.getElementById('genBtn').disabled = false;
         }
 
-        document.getElementById('genBtn').addEventListener('click', generate);
+        function generateName() {
+            if (nameDatabase.length === 0) return;
+            const randomIndex = Math.floor(Math.random() * nameDatabase.length);
+            document.getElementById('nameResult').innerText = nameDatabase[randomIndex];
+        }
+
+        // Запуск при загрузке
         init();
     </script>
-
 </body>
 </html>
