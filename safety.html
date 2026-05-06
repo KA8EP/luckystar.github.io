@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Генератор безопасных имен</title>
     
-    <!-- Подключение библиотеки через CDN Яндекса для максимальной скорости в РФ -->
-    <script src="https://yastatic.net"></script>
+    <!-- Используем надежное зеркало библиотеки (версия 5.5.3) -->
+    <script src="https://jsdelivr.net"></script>
 
     <style>
         body {
@@ -37,11 +37,6 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             font-weight: bold;
             transition: all 0.2s ease;
-        }
-
-        .nav-link:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
         }
 
         .main-wrapper {
@@ -107,9 +102,7 @@
             font-weight: bold;
         }
 
-        button:hover {
-            background-color: #0056b3;
-        }
+        button:hover { background-color: #0056b3; }
 
         @media (max-width: 768px) {
             .main-wrapper { flex-direction: column; }
@@ -133,31 +126,34 @@
         <div class="info-sidebar">
             <div class="info-card">
                 <h3>Как это работает?</h3>
-                <p>Мы используем библиотеку Faker через быстрые серверы Яндекса для мгновенной генерации ников.</p>
+                <p>Библиотека Faker создает уникальные комбинации имен и никнеймов прямо в браузере.</p>
             </div>
             <div class="info-card">
                 <h3>Безопасность</h3>
-                <p>Генерация происходит в вашем браузере, никакие данные не передаются в сеть.</p>
+                <p>Сгенерированные данные не сохраняются, что обеспечивает полную анонимность.</p>
             </div>
         </div>
     </div>
 
     <script>
-        // Инициализируем Faker с русским языком сразу после загрузки скрипта
-        // В версии 5.5.3 (от Яндекса) используется глобальный объект 'faker'
-        faker.locale = "ru";
+        // Проверяем загрузку библиотеки
+        window.onload = function() {
+            if (typeof faker !== 'undefined') {
+                faker.locale = "ru"; // Устанавливаем русский язык
+                console.log("Faker загружен успешно");
+            } else {
+                console.error("Faker не загрузился!");
+                document.getElementById("result").innerText = "Ошибка сети (библиотека)";
+            }
+        };
 
         function generateSecureName() {
-            try {
-                // Генерируем случайный никнейм
-                // internet.userName() комбинирует имя, фамилию и иногда цифры
+            if (typeof faker !== 'undefined') {
+                // Генерируем никнейм
                 const userName = faker.internet.userName(); 
-                
-                // Выводим результат в блок
                 document.getElementById("result").innerText = userName;
-            } catch (error) {
-                console.error("Ошибка:", error);
-                document.getElementById("result").innerText = "Ошибка загрузки библиотеки";
+            } else {
+                document.getElementById("result").innerText = "Библиотека недоступна";
             }
         }
     </script>
