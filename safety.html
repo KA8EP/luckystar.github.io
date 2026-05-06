@@ -8,7 +8,7 @@
         :root {
             --bg: #121212;
             --card-bg: #1e1e1e;
-            --accent: #00cfb4; /* Тот же бирюзовый цвет */
+            --accent: #00cfb4;
             --text: #ffffff;
             --text-dim: #b0b0b0;
         }
@@ -35,12 +35,12 @@
         nav a { color: var(--accent); text-decoration: none; margin: 0 10px; font-weight: bold; }
         nav span { color: var(--text-dim); margin: 0 10px; }
         
+        .result-container { position: relative; margin-bottom: 20px; }
         .result-box {
             background: #2a2a2a;
-            padding: 15px;
+            padding: 15px 50px 15px 15px;
             border-radius: 8px;
             font-size: 1.5rem;
-            margin-bottom: 20px;
             word-break: break-word;
             min-height: 36px;
             border: 1px solid #333;
@@ -49,18 +49,22 @@
             align-items: center;
             justify-content: center;
         }
-        
-        .info {
-            text-align: left;
-            font-size: 0.9rem;
-            color: var(--text-dim);
-            margin-bottom: 20px;
-            padding: 10px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 6px;
+        .copy-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+            border: none;
+            color: var(--accent);
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: bold;
         }
 
-        button {
+        .info { text-align: left; font-size: 0.8rem; color: var(--text-dim); margin-bottom: 20px; }
+        
+        .main-btn {
             width: 100%;
             padding: 15px;
             background: var(--accent);
@@ -70,85 +74,60 @@
             font-weight: bold;
             cursor: pointer;
             transition: 0.3s;
-            font-size: 1rem;
         }
-        button:hover { opacity: 0.8; transform: translateY(-1px); }
-        button:disabled { background: #444; color: #888; cursor: not-allowed; }
-        
-        .status-dot {
-            height: 8px;
-            width: 8px;
-            background-color: #ff4b2b;
-            border-radius: 50%;
-            display: inline-block;
-            margin-right: 5px;
-        }
-        .online { background-color: var(--accent); }
+        .main-btn:hover { opacity: 0.8; }
+        .main-btn:disabled { background: #444; color: #888; }
     </style>
 </head>
 <body>
     <div class="container">
         <nav>
-            <!-- Ссылки для перехода между страницами -->
             <a href="index.html">Пароли</a> | <span>Имена</span>
         </nav>
-        
         <h2>Генератор имён</h2>
         
-        <div class="result-box" id="nameResult">Загрузка базы...</div>
-        
-        <div class="info">
-            <span id="statusDot" class="status-dot"></span>
-            <span id="statusText">Подключение к облаку...</span>
+        <div class="result-container">
+            <div class="result-box" id="nameResult">Загрузка...</div>
+            <button class="copy-btn" onclick="copyText('nameResult')">COPY</button>
         </div>
+        
+        <div class="info" id="statusText">Подключение к базе данных...</div>
 
-        <button id="genBtn" onclick="generateName()" disabled>Создать имя</button>
+        <button class="main-btn" id="genBtn" onclick="generateName()" disabled>Создать имя</button>
     </div>
 
     <script>
-        // Твоя ссылка на файл
         const FILE_ID = '1iifY9xQvHpvthWBtHYWu_28o7WgR6kQd';
         const FILE_URL = `https://google.com{FILE_ID}`;
-        
         let nameDatabase = [];
 
         async function init() {
-            const resultBox = document.getElementById('nameResult');
-            const statusText = document.getElementById('statusText');
-            const statusDot = document.getElementById('statusDot');
-            const btn = document.getElementById('genBtn');
-
             try {
-                // Попытка загрузить файл
                 const response = await fetch(FILE_URL);
-                if (!response.ok) throw new Error("CORS/Access Error");
-                
+                if (!response.ok) throw new Error();
                 const data = await response.text();
                 nameDatabase = data.split(/\r?\n/).map(n => n.trim()).filter(n => n.length > 0);
-                
-                finishLoading(`База загружена: ${nameDatabase.length} имён`);
-            } catch (error) {
-                console.log("Облако недоступно, используем локальный список");
-                // Запасной список на случай ошибки Google Drive
-                nameDatabase = ["Александр", "Дмитрий", "Максим", "Артем", "Иван", "Кирилл", "Михаил"];
-                finishLoading("Локальный режим (ошибка облака)");
+                document.getElementById('statusText').innerText = `Готово. В базе ${nameDatabase.length} имён`;
+            } catch (e) {
+                nameDatabase = ["Александр", "Дмитрий", "Иван", "Максим"];
+                document.getElementById('statusText').innerText = "Локальный режим (ошибка облака)";
             }
-        }
-
-        function finishLoading(message) {
-            document.getElementById('statusText').innerText = message;
-            document.getElementById('statusDot').classList.add('online');
-            document.getElementById('nameResult').innerText = "Готов к работе";
+            document.getElementById('nameResult').innerText = "Готов";
             document.getElementById('genBtn').disabled = false;
         }
 
         function generateName() {
-            if (nameDatabase.length === 0) return;
-            const randomIndex = Math.floor(Math.random() * nameDatabase.length);
-            document.getElementById('nameResult').innerText = nameDatabase[randomIndex];
+            const name = nameDatabase[Math.floor(Math.random() * nameDatabase.length)];
+            document.getElementById('nameResult').innerText = name;
         }
 
-        // Запуск при загрузке
+        async function copyText(elementId) {
+            const text = document.getElementById(elementId).innerText;
+            if (text === "Загрузка..." || text === "Готов") return;
+            await navigator.clipboard.writeText(text);
+            alert("Имя скопировано!");
+        }
+
         init();
     </script>
 </body>
