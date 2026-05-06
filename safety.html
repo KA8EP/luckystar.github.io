@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Генератор безопасных имен</title>
     
-    <!-- ПОДКЛЮЧЕНИЕ БИБЛИОТЕКИ (РАБОЧАЯ ССЫЛКА) -->
+    <!-- Подключение библиотеки через CDN Яндекса для максимальной скорости в РФ -->
     <script src="https://yastatic.net"></script>
+
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -95,13 +96,13 @@
 
         button {
             width: 100%;
-            padding: 12px;
+            padding: 15px;
             font-size: 16px;
             cursor: pointer;
             background-color: #007bff;
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             transition: background 0.2s;
             font-weight: bold;
         }
@@ -123,7 +124,6 @@
     </nav>
 
     <div class="main-wrapper">
-        
         <div class="generator-container">
             <h2>Генератор имен</h2>
             <div id="result">Нажмите для генерации</div>
@@ -132,29 +132,32 @@
 
         <div class="info-sidebar">
             <div class="info-card">
-                <h3>Зачем это нужно?</h3>
-                <p>Безопасное имя (никнейм) не содержит вашей фамилии или даты рождения, что защищает вашу приватность.</p>
+                <h3>Как это работает?</h3>
+                <p>Мы используем библиотеку Faker через быстрые серверы Яндекса для мгновенной генерации ников.</p>
             </div>
             <div class="info-card">
-                <h3>Совет</h3>
-                <p>Используйте разные имена для разных сервисов, чтобы ваши аккаунты было сложнее связать друг с другом.</p>
+                <h3>Безопасность</h3>
+                <p>Генерация происходит в вашем браузере, никакие данные не передаются в сеть.</p>
             </div>
         </div>
-
     </div>
 
     <script>
+        // Инициализируем Faker с русским языком сразу после загрузки скрипта
+        // В версии 5.5.3 (от Яндекса) используется глобальный объект 'faker'
+        faker.locale = "ru";
+
         function generateSecureName() {
             try {
-                // В новых версиях библиотеки объект называется 'faker' (с маленькой буквы)
-                // Генерируем случайный никнейм (UserName)
+                // Генерируем случайный никнейм
+                // internet.userName() комбинирует имя, фамилию и иногда цифры
                 const userName = faker.internet.userName(); 
                 
-                // Выводим результат
+                // Выводим результат в блок
                 document.getElementById("result").innerText = userName;
             } catch (error) {
-                console.error("Ошибка библиотеки:", error);
-                document.getElementById("result").innerText = "Ошибка загрузки :(";
+                console.error("Ошибка:", error);
+                document.getElementById("result").innerText = "Ошибка загрузки библиотеки";
             }
         }
     </script>
