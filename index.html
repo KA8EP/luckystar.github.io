@@ -3,219 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Генератор паролей с инфо-панелью</title>
+    <title>Генератор паролей</title>
     <style>
+        :root {
+            --bg: #121212;
+            --card-bg: #1e1e1e;
+            --accent: #00cfb4;
+            --text: #ffffff;
+            --text-dim: #b0b0b0;
+        }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            background-color: #f0f2f5;
-            padding: 20px;
-            position: relative; /* Нужно для позиционирования навигации */
         }
-
-        /* Стиль для кнопки-ссылки на вторую страницу */
-        .top-nav {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-        }
-
-        .nav-link {
-            display: inline-block;
-            padding: 12px 20px;
-            background-color: white;
-            color: #28a745;
-            text-decoration: none;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            font-weight: bold;
-            transition: all 0.2s ease;
-            border: 1px solid transparent;
-        }
-
-        .nav-link:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-            border-color: #28a745;
-        }
-
-        /* Главный контейнер для выравнивания в ряд */
-        .main-wrapper {
-            display: flex;
-            gap: 20px;
-            max-width: 800px;
+        .container {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             width: 100%;
-            align-items: flex-start;
-        }
-
-        /* Стили генератора */
-        .generator-container {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            max-width: 400px;
             text-align: center;
-            flex: 1;
         }
-
-        /* Стили боковой панели */
-        .info-sidebar {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            width: 300px;
-        }
-
-        .info-card {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-
-        .info-card h3 {
-            margin-top: 0;
-            color: #333;
-            border-bottom: 2px solid #28a745;
-            padding-bottom: 5px;
-        }
-
-        .info-card p {
-            font-size: 14px;
-            color: #666;
-            line-height: 1.5;
-        }
-
-        #result {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 20px;
+        nav { margin-bottom: 20px; }
+        nav a { color: var(--accent); text-decoration: none; margin: 0 10px; font-weight: bold; }
+        .result-box {
+            background: #2a2a2a;
             padding: 15px;
-            background: #e9ecef;
-            border-radius: 6px;
-            word-break: break-all;
-            min-height: 24px;
-        }
-
-        .options {
-            text-align: left;
+            border-radius: 8px;
+            font-size: 1.2rem;
             margin-bottom: 20px;
+            word-break: break-all;
+            min-height: 28px;
+            border: 1px solid #333;
         }
-
-        .options label {
-            display: block;
-            margin-bottom: 8px;
-            cursor: pointer;
-        }
-
+        .settings { text-align: left; margin-bottom: 20px; }
+        .setting-item { margin: 10px 0; display: flex; justify-content: space-between; }
+        input[type="number"] { width: 50px; background: #333; border: none; color: white; padding: 5px; border-radius: 4px; }
         button {
             width: 100%;
             padding: 12px;
-            font-size: 16px;
-            cursor: pointer;
-            background-color: #28a745;
-            color: white;
+            background: var(--accent);
             border: none;
-            border-radius: 6px;
-            transition: background 0.2s;
+            border-radius: 8px;
+            color: var(--bg);
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
         }
-
-        button:hover {
-            background-color: #218838;
-        }
-
-        /* Адаптивность для мобилок */
-        @media (max-width: 768px) {
-            .main-wrapper {
-                flex-direction: column;
-                align-items: center;
-            }
-            .info-sidebar {
-                width: 100%;
-            }
-            .top-nav {
-                position: static;
-                margin-bottom: 20px;
-                text-align: center;
-            }
-        }
+        button:hover { opacity: 0.8; }
     </style>
 </head>
 <body>
-
-    <!-- Навигация -->
-    <nav class="top-nav">
-        <a href="safety.html" class="nav-link">Генератор имён →</a>
-    </nav>
-
-    <div class="main-wrapper">
+    <div class="container">
+        <nav>
+            <span>Пароли</span> | <a href="safety.html">Имена</a>
+        </nav>
+        <h2>Генератор паролей</h2>
+        <div class="result-box" id="passwordResult">Нажмите «Создать»</div>
         
-        <!-- Левая часть: Генератор -->
-        <div class="generator-container">
-            <div id="result">Настройте и нажмите кнопку</div>
-
-            <div class="options">
-                <label><input type="checkbox" id="uppercase" checked> Прописные (A-Z)</label>
-                <label><input type="checkbox" id="lowercase" checked> Строчные (a-z)</label>
-                <label><input type="checkbox" id="numbers" checked> Цифры (0-9)</label>
-                <label><input type="checkbox" id="symbols"> Спецсимволы (!@#$)</label>
+        <div class="settings">
+            <div class="setting-item">
+                <span>Длина (8-50):</span>
+                <input type="number" id="length" value="12" min="8" max="50">
             </div>
-            
-            <button onclick="generatePassword()">Сгенерировать пароль</button>
-        </div>
-
-        <!-- Правая часть: Таблички с информацией -->
-        <div class="info-sidebar">
-            <div class="info-card">
-                <h3>О сайте</h3>
-                <p>Генератор создан в качестве проекта по информатике для ИЭК.</p>
+            <div class="setting-item">
+                <span>Заглавные буквы (A-Z):</span>
+                <input type="checkbox" id="upper" checked>
             </div>
-
-            <div class="info-card">
-                <h3>О создателях</h3>
-                <p>Создатели красавчики.</p>
+            <div class="setting-item">
+                <span>Числа (0-9):</span>
+                <input type="checkbox" id="numbers" checked>
+            </div>
+            <div class="setting-item">
+                <span>Спецсимволы (!@#$):</span>
+                <input type="checkbox" id="symbols">
             </div>
         </div>
-
+        <button onclick="generatePassword()">Создать пароль</button>
     </div>
 
     <script>
         function generatePassword() {
-            const length = 14; 
-            const charsets = {
-                uppercase: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-                lowercase: "abcdefghijklmnopqrstuvwxyz",
-                numbers: "0123456789",
-                symbols: "!@#$%^&*()_+~`|}{[]:;?><,./-="
-            };
-
-            let availableChars = "";
-            if (document.getElementById("uppercase").checked) availableChars += charsets.uppercase;
-            if (document.getElementById("lowercase").checked) availableChars += charsets.lowercase;
-            if (document.getElementById("numbers").checked) availableChars += charsets.numbers;
-            if (document.getElementById("symbols").checked) availableChars += charsets.symbols;
-
-            if (availableChars === "") {
-                document.getElementById("result").innerText = "Выберите параметры!";
-                return;
-            }
-
-            // Используем window.crypto для большей безопасности
-            let password = "";
-            const array = new Uint32Array(length);
-            window.crypto.getRandomValues(array);
-
-            for (let i = 0; i < length; i++) {
-                password += availableChars[array[i] % availableChars.length];
-            }
+            const length = document.getElementById('length').value;
+            const hasUpper = document.getElementById('upper').checked;
+            const hasNumbers = document.getElementById('numbers').checked;
+            const hasSymbols = document.getElementById('symbols').checked;
             
-            document.getElementById("result").innerText = password;
+            const lower = "abcdefghijklmnopqrstuvwxyz";
+            const upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            const numbers = "0123456789";
+            const symbols = "!@#$%^&*()_+~`|}{[]:;?><,./-=";
+            
+            let charSet = lower;
+            if (hasUpper) charSet += upper;
+            if (hasNumbers) charSet += numbers;
+            if (hasSymbols) charSet += symbols;
+            
+            let password = "";
+            for (let i = 0; i < length; i++) {
+                password += charSet.charAt(Math.floor(Math.random() * charSet.length));
+            }
+            document.getElementById('passwordResult').innerText = password;
         }
     </script>
-
 </body>
 </html>
+
